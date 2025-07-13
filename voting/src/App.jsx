@@ -1,65 +1,30 @@
-/* eslint-disable no-unused-vars */
-// frontend/src/App.js
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import votingAbi from "./abi/Voting.json";
-
-const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE";
+import WalletConnect from "./useHook/walletConnect";
 
 function App() {
-  const [candidates, setCandidates] = useState([]);
-  const [voted, setVoted] = useState(false);
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
-  const [contract, setContract] = useState(null);
+ const { account, connectedWallet } = WalletConnect()
 
-  useEffect(() => {
-    const init = async () => {
-      const prov = new ethers.providers.Web3Provider(window.ethereum);
-      await prov.send("eth_requestAccounts", []);
-      const signer = prov.getSigner();
-      const votingContract = new ethers.Contract(contractAddress, votingAbi.abi, signer);
-
-      setProvider(prov);
-      setSigner(signer);
-      setContract(votingContract);
-
-      const count = await votingContract.getCandidateCount();
-      const fetchedCandidates = [];
-
-      for (let i = 0; i < count; i++) {
-        const candidate = await votingContract.candidates(i);
-        fetchedCandidates.push({ name: candidate.name, voteCount: candidate.voteCount.toString() });
-      }
-
-      setCandidates(fetchedCandidates);
-    };
-
-    init();
-  }, [voted]);
-
-  const vote = async (index) => {
-    try {
-      const tx = await contract.vote(index);
-      await tx.wait();
-      setVoted(true);
-    } catch (err) {
-      alert("You might have already voted or there's an error.");
-    }
-  };
 
   return (
-    <div className="App">
-      <h1>Voting DApp</h1>
-      <ul>
-        {candidates.map((c, i) => (
-          <li key={i}>
-            {c.name} - Votes: {c.voteCount}
-            <button onClick={() => vote(i)}>Vote</button>
-          </li>
-        ))}
-      </ul>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="p-4 border rounded-xl w-fit">
+        {account ? (
+          <div className="text-green-600">
+            Wallet Connected:{' '}
+            <span className="font-mono">
+              {account.slice(0, 6)}...{account.slice(-4)}
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={connectedWallet}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            connect wallet
+          </button>
+        )}
+      </div>
     </div>
+
   );
 }
 
