@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState, useCallback } from "react"
-import { ethers } from "ethers";
+
 
 const WalletConnect = () => {
   const [account, setAccount] = useState(null)
@@ -24,7 +23,7 @@ const WalletConnect = () => {
       }
 
       const accounts = await window.ethereum.request({
-        method: 'eth_requestAccount'
+        method: 'eth_requestAccounts'
       })
 
       setAccount(accounts[0])
@@ -38,16 +37,20 @@ const WalletConnect = () => {
     checkWallet()
 
     if (window.ethereum) {
-      window.ethereum.on('Account changed', (accounts) => {
+      window.ethereum.on('accountsChanged', (accounts) => {
         setAccount(accounts[0] || null)
       })
     }
   }, [checkWallet])
 
+  const disconnetWallet = () => {
+    setAccount(null)
+  }
+
   return {
-    checkWallet,
     connectedWallet,
-    account
+    account,
+    disconnetWallet
   }
 }
 

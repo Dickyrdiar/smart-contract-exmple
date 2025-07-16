@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import withMT from "@material-tailwind/react/utils/withMT";
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 // export default defineConfig({
@@ -7,7 +8,7 @@ import withMT from "@material-tailwind/react/utils/withMT";
 // })
 
 export default withMT({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
